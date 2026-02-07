@@ -3,8 +3,8 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 
 
-var endpoint = Environment.GetEnvironmentVariable("OPENAI_ENDPOINT") ?? "http://127.0.0.1:11434/v1";
-var modelName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? "llama3.1:8b";
+var endpoint = Environment.GetEnvironmentVariable("OLLAMA_ENDPOINT") ?? "http://127.0.0.1:11434/v1";
+var modelName = Environment.GetEnvironmentVariable("MODEL_NAME") ?? "llama3.1:8b";
 IChatClient chatClient = new OllamaChatClient(endpoint, modelName);
 
 // Create the AI agents with specialized expertise
