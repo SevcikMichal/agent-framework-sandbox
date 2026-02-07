@@ -48,7 +48,7 @@ await foreach (WorkflowEvent evt in run.WatchStreamAsync())
 /// Executor that starts the concurrent processing by sending messages to the agents.
 /// </summary>
 internal sealed partial class ConcurrentStartExecutor() :
-    Executor("ConcurrentStartExecutor")
+    Executor<string>("ConcurrentStartExecutor")
 {
     /// <summary>
     /// Starts the concurrent processing by sending messages to the agents.
@@ -58,20 +58,13 @@ internal sealed partial class ConcurrentStartExecutor() :
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests.
     /// The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>A task representing the asynchronous operation</returns>
-    [MessageHandler]
-    public async ValueTask HandleAsync(string message, IWorkflowContext context, CancellationToken cancellationToken = default)
+    public override async ValueTask HandleAsync(string message, IWorkflowContext context, CancellationToken cancellationToken = default)
     {
         // Broadcast the message to all connected agents. Receiving agents will queue
         // the message but will not start processing until they receive a turn token.
         await context.SendMessageAsync(new ChatMessage(ChatRole.User, message), cancellationToken: cancellationToken);
         // Broadcast the turn token to kick off the agents.
         await context.SendMessageAsync(new TurnToken(emitEvents: true), cancellationToken: cancellationToken);
-    }
-
-    protected override RouteBuilder ConfigureRoutes(RouteBuilder routeBuilder)
-    {
-        routeBuilder.AddHandler<string>(this.HandleAsync);
-        return routeBuilder;
     }
 }
 
